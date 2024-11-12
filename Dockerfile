@@ -1,18 +1,13 @@
-# Use the official Python image from the Docker Hub
-FROM python:3.9-slim
+from http.server import SimpleHTTPRequestHandler, HTTPServer
 
-# Set the working directory in the container
-WORKDIR /app
+class HelloWorldHandler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(b"Hello, World from Cloud Run!")
 
-# Copy requirements.txt and install dependencies
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY . .
-
-# Expose port 8080 to match the port that the app runs on
-EXPOSE 8080
-
-# Command to run the application using Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+if __name__ == '__main__':
+    server = HTTPServer(('0.0.0.0', 8080), HelloWorldHandler)
+    print("Starting server on port 8080...")
+    server.serve_forever()
