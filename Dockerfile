@@ -1,13 +1,14 @@
-from http.server import SimpleHTTPRequestHandler, HTTPServer
+# Use a minimal Python image
+FROM python:3.9-slim
 
-class HelloWorldHandler(SimpleHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-        self.wfile.write(b"Hello, World from Cloud Run!")
+# Set the working directory in the container
+WORKDIR /app
 
-if __name__ == '__main__':
-    server = HTTPServer(('0.0.0.0', 8080), HelloWorldHandler)
-    print("Starting server on port 8080...")
-    server.serve_forever()
+# Copy the application code
+COPY app.py .
+
+# Expose port 8080 to match the port that the app runs on
+EXPOSE 8080
+
+# Command to run the application
+CMD ["python", "app.py"]
